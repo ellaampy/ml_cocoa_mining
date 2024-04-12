@@ -208,7 +208,7 @@ def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return
 # load shp files
 labeled_shp_path = '/app/dev/FM4EO/data/cluster/samples_2000.shp'
 unlabeled_shp_path = '/app/dev/FM4EO/data/cluster/samples_2000.shp'
-predicted_shp_path = '/app/dev/FM4EO/data/cluster/samples_2000.shp'
+predicted_output= '/app/dev/FM4EO/data/cluster/samples_2000.shp'
 
 raster_path = '/app/dev/FM4EO/data/mosaic/mosaic_2016_final.tif'
 dem_path = '/app/dev/FM4EO/data/cop_dem/elevation.tif'
@@ -223,4 +223,4 @@ shp_original = zonal(shp_original, dem_path, stats='mean', col_prefix='dem')
 model, acc, fs = model_train(shp_original, splits=3, num_trial= 10, n_jobs=30, model_path=model_path)
 
 # predict on unlabeled
-model_pred(unlabeled_shp_path, raster_path, dem_path, model_path, predicted_shp_path, return_prob=True)
+model_pred(unlabeled_shp_path, raster_path, dem_path, model_path, predicted_output, return_prob=True)
