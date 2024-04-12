@@ -170,7 +170,7 @@ def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return
     geom = shp['geometry'].tolist()
     probs = []
 
-    # remove geometry and fid
+    # remove geometry, fid, target columns
     cols = [x for x in shp.columns if x not in ['FID', 'geometry', 'Target']]
     shp = shp[cols]
 
@@ -203,24 +203,31 @@ def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return
 
 
 
-## how to use
+# ## how to use
 
-# load shp files
-labeled_shp_path = '/app/dev/FM4EO/data/cluster/samples_2000.shp'
-unlabeled_shp_path = '/app/dev/FM4EO/data/cluster/samples_2000.shp'
-predicted_output= '/app/dev/FM4EO/data/cluster/samples_2000.shp'
+# # load labeled shp (e.g the labeled portion of cluster 0)
+# labeled_shp_path = '/app/dev/FM4EO/testing/samples_2000.shp'
 
-raster_path = '/app/dev/FM4EO/data/mosaic/mosaic_2016_final.tif'
-dem_path = '/app/dev/FM4EO/data/cop_dem/elevation.tif'
-model_path = '/app/dev/FM4EO/model/labeling/rf_2016_cluster0.joblib'
+# # load unlabeled shp eg. cluster 0 shp
+# unlabeled_shp_path = '/app/dev/FM4EO/testing/clustered_polygons_0.shp'
+
+# # path to save predicted labels of unlabeled shp
+# predicted_output= '/app/dev/FM4EO/testing/clustered_polygons_0_labeled.shp'
+
+# # path to sentinel2 image and dem
+# raster_path = '/app/dev/FM4EO/data/mosaic/mosaic_2016_final.tif'
+# dem_path = '/app/dev/FM4EO/data/cop_dem/elevation.tif'
+
+# # path to save rf model
+# model_path = '/app/dev/FM4EO/testing/rf_2016_cluster0.joblib'
 
 
-# get zonal statistics of sentinel bands and dem for labeled shp
-shp_original = zonal(labeled_shp_path, raster_path, stats='mean', col_prefix='sentinel')
-shp_original = zonal(shp_original, dem_path, stats='mean', col_prefix='dem')
+# # get zonal statistics of sentinel bands and dem for labeled shp
+# shp_original = zonal(labeled_shp_path, raster_path, stats='mean', col_prefix='sentinel')
+# shp_original = zonal(shp_original, dem_path, stats='mean', col_prefix='dem')
 
-# train random forest on labeled. returns model accuracy, fscore
-model, acc, fs = model_train(shp_original, splits=3, num_trial= 10, n_jobs=30, model_path=model_path)
+# # train random forest on labeled. returns model accuracy, fscore
+# model, acc, fs = model_train(shp_original, splits=3, num_trial= 0, n_jobs=30, model_path=model_path)
 
-# predict on unlabeled
-model_pred(unlabeled_shp_path, raster_path, dem_path, model_path, predicted_output, return_prob=True)
+# # predict on unlabeled
+# model_pred(unlabeled_shp_path, raster_path, dem_path, model_path, predicted_output, return_prob=True)
