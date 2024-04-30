@@ -3,6 +3,7 @@ import rasterio
 from rasterio.transform import from_origin
 from rasterio import features
 import numpy as np
+import os
 
 def rasterize_shapefile(shapefile, attribute):
     # Read the shapefile
@@ -50,4 +51,13 @@ if __name__ == "__main__":
     shapefile1 = '/localhome/zapp_an/Desktop/fasteo/binary_maps/2016/binary_map_cl_0_2016.shp'  # Provide the path to the first shapefile
     shapefile2 = '/localhome/zapp_an/Desktop/fasteo/binary_maps/2022/binary_map_cl_0_2022.shp'  # Provide the path to the second shapefile
     output_raster = '/localhome/zapp_an/Desktop/fasteo/binary_maps/diff_2016-2022/cluster_0/suspicious_raster_cl_0.tif'  # Provide the path for the output raster
+    
+    # Extract directory and file name
+    output_dir, output_file = os.path.split(output_raster)
+    
+    # Ensure the directory exists before saving the file
+    if output_dir and not os.path.exists(output_dir):
+        #otherwise create the dir
+        os.makedirs(output_dir)
+    
     main(shapefile1, shapefile2, output_raster)
