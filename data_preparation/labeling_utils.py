@@ -76,7 +76,7 @@ def model_train(table, splits, num_trial, n_jobs, model_path):
     """
 
     # remove geometry and fid
-    cols = [x for x in table.columns if x not in ['FID', 'geometry']]
+    cols = [x for x in table.columns if x not in ['FID', 'DN', 'geometry']]
     table = table[cols]
 
     y = table['Target'].values
@@ -166,12 +166,13 @@ def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return
     shp = zonal(shp, dem_path, stats='mean', col_prefix='dem')
 
     # get existing attributes
-    fid = shp['FID'].tolist()
+    fid_col = 'FID' if 'FID' in shp.columns else 'DN'
+    fid = shp[fid_col].tolist()
     geom = shp['geometry'].tolist()
     probs = []
 
     # remove geometry, fid, target columns
-    cols = [x for x in shp.columns if x not in ['FID', 'geometry', 'Target']]
+    cols = [x for x in shp.columns if x not in [fid_col, 'geometry', 'Target']]
     shp = shp[cols]
 
     
@@ -193,7 +194,7 @@ def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return
     
     # save predictions to model path
     predictions_gdf = gpd.GeoDataFrame(geometry=geom, crs='epsg:32630')
-    predictions_gdf['FID'] = fid
+    predictions_gdf[fid_col] = fid
     predictions_gdf['mine_prob'] = probs
     predictions_gdf.to_file(output_shp)
 
@@ -203,31 +204,40 @@ def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return
 
 
 
-# ## how to use
+# # ## how to use
 
-# # load labeled shp (e.g the labeled portion of cluster 0)
-# labeled_shp_path = '/app/dev/FM4EO/testing/samples_2000.shp'
+# cluster_id = 0
+# year = 2016
+# print('processing for cluster id ==>', cluster_id, 'in year ==>', year)
 
-# # load unlabeled shp eg. cluster 0 shp
-# unlabeled_shp_path = '/app/dev/FM4EO/testing/clustered_polygons_0.shp'
+# #======================== PART 1 
+# ## load all cluster data and filter labelled data
+# data = gpd.read_file('/app/dev/FM4EO/data/cluster_{}/clustered_polygons_{}.shp'.format(year, cluster_id))
+# labeled_shp_path = data[data['Target'] >= 0]
+# print('total number of labelled samples in cluster', labeled_shp_path.shape)
+
+# #======================== PART 2 SET PATH
+# # # load unlabeled shp eg. cluster 0 shp
+# unlabeled_shp_path = '/app/dev/FM4EO/data/cluster_{}/clustered_polygons_{}.shp'.format(year, cluster_id)
 
 # # path to save predicted labels of unlabeled shp
-# predicted_output= '/app/dev/FM4EO/testing/clustered_polygons_0_labeled.shp'
+# predicted_output= '/app/dev/FM4EO/data/cluster_{}/clustered_polygons_{}_labeled.shp'.format(year, cluster_id)
 
 # # path to sentinel2 image and dem
-# raster_path = '/app/dev/FM4EO/data/mosaic/mosaic_2016_final.tif'
+# raster_path = '/app/dev/FM4EO/data/mosaic/mosaic_{}_final.tif'.format(year)
 # dem_path = '/app/dev/FM4EO/data/cop_dem/elevation.tif'
 
 # # path to save rf model
-# model_path = '/app/dev/FM4EO/testing/rf_2016_cluster0.joblib'
+# model_path = '/app/dev/FM4EO/model/cluster_{}/rf_{}_cluster{}.joblib'.format(year, year, cluster_id)
 
-
+# #======================== PART 3 SET ZONAL STATISTICS
 # # get zonal statistics of sentinel bands and dem for labeled shp
 # shp_original = zonal(labeled_shp_path, raster_path, stats='mean', col_prefix='sentinel')
 # shp_original = zonal(shp_original, dem_path, stats='mean', col_prefix='dem')
 
-# # train random forest on labeled. returns model accuracy, fscore
-# model, acc, fs = model_train(shp_original, splits=3, num_trial= 0, n_jobs=30, model_path=model_path)
+# #train random forest on labeled. returns model accuracy, fscore
+# model, acc, fs = model_train(shp_original, splits=3, num_trial= 20, n_jobs=30, model_path=model_path)
 
+# #======================== PART 4 PREDICT ON UNLABELED DATA
 # # predict on unlabeled
 # model_pred(unlabeled_shp_path, raster_path, dem_path, model_path, predicted_output, return_prob=True)
