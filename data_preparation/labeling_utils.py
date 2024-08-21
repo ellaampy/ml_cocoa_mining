@@ -1,4 +1,3 @@
-
 import geopandas as gpd
 import numpy as np
 from rasterstats import zonal_stats
@@ -75,8 +74,13 @@ def model_train(table, splits, num_trial, n_jobs, model_path):
         model_path: directory+path.joblib to save model
     """
 
+<<<<<<< HEAD
     # remove geometry and fid
     cols = [x for x in table.columns if x not in ['FID', 'DN', 'geometry']]
+=======
+    # remove geometry and FID
+    cols = [x for x in table.columns if x not in ['FID', 'geometry']]
+>>>>>>> 1e3f2dbd186210dfc4a4c5ba0121c14bbc88db43
     table = table[cols]
 
     y = table['Target'].values
@@ -159,13 +163,13 @@ def model_train(table, splits, num_trial, n_jobs, model_path):
     return clf, accuracies, f_scores
 
 
-
 def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return_prob=True):
 
     shp = zonal(shp_path, sentinel_path, stats='mean', col_prefix='sentinel')
     shp = zonal(shp, dem_path, stats='mean', col_prefix='dem')
 
     # get existing attributes
+<<<<<<< HEAD
     fid_col = 'FID' if 'FID' in shp.columns else 'DN'
     fid = shp[fid_col].tolist()
     geom = shp['geometry'].tolist()
@@ -173,6 +177,14 @@ def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return
 
     # remove geometry, fid, target columns
     cols = [x for x in shp.columns if x not in [fid_col, 'geometry', 'Target']]
+=======
+    FID = shp['FID'].tolist()
+    geom = shp['geometry'].tolist()
+    probs = []
+
+    # remove geometry, FID, target columns
+    cols = [x for x in shp.columns if x not in ['FID', 'geometry', 'Target']]
+>>>>>>> 1e3f2dbd186210dfc4a4c5ba0121c14bbc88db43
     shp = shp[cols]
 
     
@@ -194,8 +206,22 @@ def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return
     
     # save predictions to model path
     predictions_gdf = gpd.GeoDataFrame(geometry=geom, crs='epsg:32630')
+<<<<<<< HEAD
     predictions_gdf[fid_col] = fid
+=======
+    predictions_gdf['FID'] = FID
+>>>>>>> 1e3f2dbd186210dfc4a4c5ba0121c14bbc88db43
     predictions_gdf['mine_prob'] = probs
+
+    # Extract directory and file name
+    output_dir, output_file = os.path.split(output_shp)
+    
+    # Ensure the directory exists before saving the file
+    if output_dir and not os.path.exists(output_dir):
+        #otherwise create the dir
+        os.makedirs(output_dir)
+
+    # Save GeoDataFrame to file
     predictions_gdf.to_file(output_shp)
 
     print('prediction complete')
@@ -206,6 +232,7 @@ def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return
 
 # # ## how to use
 
+<<<<<<< HEAD
 # cluster_id = 0
 # year = 2016
 # print('processing for cluster id ==>', cluster_id, 'in year ==>', year)
@@ -222,22 +249,52 @@ def model_pred(shp_path, sentinel_path, dem_path, model_path, output_shp, return
 
 # # path to save predicted labels of unlabeled shp
 # predicted_output= '/app/dev/FM4EO/data/cluster_{}/clustered_polygons_{}_labeled.shp'.format(year, cluster_id)
+=======
+# # load labeled shp (e.g the labeled portion of cluster 0)
+# labeled_shp_path = '/app/dev/FM4EO/testing/samples_2000.shp'
+labeled_shp_path = '/localhome/zapp_an/Desktop/fasteo/data_2016/cluster_3_labels/clustered_polygons_3_labels.shp'
+
+# # load unlabeled shp eg. cluster 0 shp
+# unlabeled_shp_path = '/app/dev/FM4EO/testing/clustered_polygons_0.shp'
+unlabeled_shp_path = '/localhome/zapp_an/Desktop/fasteo/data_2016/cluster_3/clustered_polygons_3.shp'
+
+# # path to save predicted labels of unlabeled shp
+# predicted_output= '/app/dev/FM4EO/testing/clustered_polygons_0_labeled.shp'
+predicted_output= '/localhome/zapp_an/Desktop/fasteo/data_2016/cluster_2_predictions/predictions_cluster_2_2016.shp'
+>>>>>>> 1e3f2dbd186210dfc4a4c5ba0121c14bbc88db43
 
 # # path to sentinel2 image and dem
 # raster_path = '/app/dev/FM4EO/data/mosaic/mosaic_{}_final.tif'.format(year)
 # dem_path = '/app/dev/FM4EO/data/cop_dem/elevation.tif'
+raster_path = '/localhome/zapp_an/Desktop/fasteo/data_2016/mosaic_2016_final.tif'
+dem_path = '/localhome/zapp_an/Desktop/fasteo/ml_cocoa_mining/data_preparation/elevation.tif'
 
 # # path to save rf model
+<<<<<<< HEAD
 # model_path = '/app/dev/FM4EO/model/cluster_{}/rf_{}_cluster{}.joblib'.format(year, year, cluster_id)
+=======
+# model_path = '/app/dev/FM4EO/testing/rf_2016_cluster0.joblib'
+model_path = '/localhome/zapp_an/Desktop/fasteo/ml_cocoa_mining/data_preparation/rf_2016_cluster2.joblib'
+
+>>>>>>> 1e3f2dbd186210dfc4a4c5ba0121c14bbc88db43
 
 # #======================== PART 3 SET ZONAL STATISTICS
 # # get zonal statistics of sentinel bands and dem for labeled shp
-# shp_original = zonal(labeled_shp_path, raster_path, stats='mean', col_prefix='sentinel')
-# shp_original = zonal(shp_original, dem_path, stats='mean', col_prefix='dem')
+shp_original = zonal(labeled_shp_path, raster_path, stats='mean', col_prefix='sentinel')
+shp_original = zonal(shp_original, dem_path, stats='mean', col_prefix='dem')
 
+<<<<<<< HEAD
 # #train random forest on labeled. returns model accuracy, fscore
 # model, acc, fs = model_train(shp_original, splits=3, num_trial= 20, n_jobs=30, model_path=model_path)
+=======
+# # train random forest on labeled. returns model accuracy, fscore
+model, acc, fs = model_train(shp_original, splits=3, num_trial= 50, n_jobs=30, model_path=model_path)
+>>>>>>> 1e3f2dbd186210dfc4a4c5ba0121c14bbc88db43
 
 # #======================== PART 4 PREDICT ON UNLABELED DATA
 # # predict on unlabeled
+<<<<<<< HEAD
 # model_pred(unlabeled_shp_path, raster_path, dem_path, model_path, predicted_output, return_prob=True)
+=======
+model_pred(unlabeled_shp_path, raster_path, dem_path, model_path, predicted_output, return_prob=True)
+>>>>>>> 1e3f2dbd186210dfc4a4c5ba0121c14bbc88db43
