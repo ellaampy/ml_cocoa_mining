@@ -26,12 +26,17 @@ def create_mining_stats(label_path='/app/dev/FM4EO/data/patch_data/2016/MASK', m
         with rio.open(os.path.join(label_path, fname)) as src:
             raster_data = src.read()
 
-        # create cocoa binary
-        raster_data[cocoa_band] =  np.where(raster_data[cocoa_band] >= cocoa_threshold, 1, 0)
+            # set nodata
+            raster_data = np.where(raster_data == src.nodata, 0, raster_data)
 
-        # get proportion of mine
-        mining_area = np.sum(raster_data[mining_band] == 1)
-        cocoa_area = np.sum(raster_data[cocoa_band] == 1)
+            # create mining and cocoa mask
+            mining_mask = np.where(raster_data[mining_band] >1, 0, raster_data[mining_band]) 
+            cocoa_mask = np.where(raster_data[cocoa_band] >= cocoa_threshold, 2, 0)
+
+            # merge. mining area is prioritised
+            mask = np.where(mining_mask !=1, cocoa_mask, mining_mask)
+            mining_area = np.sum(mask == 1)
+            cocoa_area = np.sum(mask == 2)
 
         stats_dict[fname] = [np.round(mining_area/area *100, 2), 
                              np.round(cocoa_area/area *100, 2)]
@@ -173,9 +178,8 @@ def cluster_by_histograms(stats_path, cocoa_bins=[0, 20,40,60,80,100],
 
 
 if __name__ == "__main__":
-    # This code block runs only when the script is executed directly
-    path = '/app/dev/FM4EO/data/patch_data/2016/MASK'
-    # create_mining_stats(path)
+    path = '/app/dev/FM4EO/data/patch_data/2022/MASK'
+    create_mining_stats(path)
     # cluster_patches_kmeans(path, num_clusters = 5, train_percent=70)
     cluster_by_histograms(path)
     print("stats complete")
