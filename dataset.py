@@ -57,7 +57,7 @@ class ImageMaskDataset(Dataset):
             self.file_idx = self.file_idx['patch_name']
         self.file_idx = self.file_idx['patch_name'].to_list()
 
-        ## remove extreme edge patches. dimension 13x36
+        ## remove extreme edge patches. with dimension e.g. 13x36
         self.file_idx  = [item for item in self.file_idx  if not 
                           any(s in item for s in ['1344', '1409', '1640', 
                                                   '1694','2132', '2133', 
