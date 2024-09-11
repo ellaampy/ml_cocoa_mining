@@ -87,21 +87,18 @@ class ImageMaskDataset(Dataset):
             mask_array = np.where(mask_array == src.nodata, 0, mask_array)
             
 
+            # merge mining and cocoa mask
+            mining_mask = np.where(mask_array[0] >1, 0, mask_array[0]) 
+            cocoa_mask = np.where(mask_array[1] >= self.cocoa_threshold, 2, 0)
+            mask = np.where(mining_mask !=1, cocoa_mask, mining_mask)
+
             if self.classification == 'cocoa':
-                cocoa_mask = np.where(mask_array[1] >= self.cocoa_threshold, 1, 0) 
-                mask = cocoa_mask
+                mask = np.where(mask == 2, 1, 0) 
 
             elif self.classification == 'mining':
-                mining_mask = np.where(mask_array[0] >1, 0, mask_array[0]) 
-                mask = mining_mask
-                
-            elif self.classification == 'combined':
-                # merge mining and cocoa mask
-                mining_mask = np.where(mask_array[0] >1, 0, mask_array[0]) 
-                # NB cocoa mask set to 2 for multi-class case
-                cocoa_mask = np.where(mask_array[1] >= self.cocoa_threshold, 2, 0)
-                mask = np.where(mining_mask !=1, cocoa_mask, mining_mask)
+                mask = np.where(mask == 1, 1, 0) 
 
+            
         if self.transform:
             norm_image = self.transform(image=np.moveaxis(norm_image,0,-1))["image"]
             norm_image = np.moveaxis(norm_image, -1, 0)
