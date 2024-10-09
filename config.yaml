@@ -4,29 +4,29 @@ defaults:
 
 
 model:
-  name: unet
-  backbone: resnet34  #resnet18/34/50, resnext50_32x4d, efficientnet-b4/b5/b6
+  name: deeplab
+  backbone: resnet50  #resnet18/34/50, resnext50_32x4d, efficientnet-b4/b5/b6
   encoder_weights: imagenet
   unfreeze: null #segmentation_head # decoder  #null
-  num_classes: 2
+  num_classes: 3
 
 training:
-  loss: focal #focal, tversky, dice
+  loss: dice #focal, tversky, dice
   batch_size: 64
-  lr: 0.0001
-  epochs: 50
+  lr: 0.001
+  epochs: 100
   optimizer: adam
   seed: 3407
   device: cuda
   num_workers: 4
-  patience: 5
-  results_path: /app/dev/FM4EO/results_cocoa/unet_res34_focal_simpletransform_13channels_lr0001_50eps
+  patience: 10
+  results_path: /app/dev/FM4EO/results_combined/final_selection/deeplab_res34_focal_simpletransform_13channels_lr001_100eps_dice
 
 dataset:
   data_dir: /app/dev/FM4EO/data/patch_data/2016
   split_path: /app/dev/FM4EO/data/patch_data/2016/MASK/train_test_splits.csv
-  classification: 'cocoa' #mining, cocoa, combined
-  feature_idx: [0,1,2,3,4,5,6,7,8,9, 10,11,12] # use [2, 1, 0] for RGB
+  classification: 'combined' #mining, cocoa, combined
+  feature_idx: [0,1,2,3,4,5,6,7,8,9,10,11,12] # use [2, 1, 0] for RGB
   transform: simple  # colour  # mixed # simple_norm
   
 

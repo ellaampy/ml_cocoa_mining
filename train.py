@@ -204,5 +204,8 @@ def main(cfg: DictConfig):
 
 
 if __name__ == "__main__":
+    print(torch.__version__)
+    # torch.backends.cudnn.benchmark = False
+    # torch.backends.cudnn.enabled = False
     torch.cuda.empty_cache()
     main()

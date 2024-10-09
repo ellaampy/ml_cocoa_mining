@@ -74,13 +74,8 @@ def model_train(table, splits, num_trial, n_jobs, model_path):
         model_path: directory+path.joblib to save model
     """
 
-<<<<<<< HEAD
     # remove geometry and fid
     cols = [x for x in table.columns if x not in ['FID', 'DN', 'geometry']]
-=======
-    # remove geometry and FID
-    cols = [x for x in table.columns if x not in ['FID', 'geometry']]
->>>>>>> 1e3f2dbd186210dfc4a4c5ba0121c14bbc88db43
     table = table[cols]
 
     y = table['Target'].values
