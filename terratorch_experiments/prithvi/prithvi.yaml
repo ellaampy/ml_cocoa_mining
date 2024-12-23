@@ -1,0 +1,210 @@
+seed_everything: 0
+
+trainer:
+  accelerator: auto
+  strategy: auto
+  devices: 4
+  num_nodes: 1
+  precision: 16-mixed
+  logger:
+    class_path: TensorBoardLogger
+    init_args:
+      save_dir: output/GhanaMiningOut
+      name: ghana_mining_stats
+  callbacks:
+    - class_path: RichProgressBar
+    - class_path: LearningRateMonitor
+      init_args:
+        logging_interval: epoch
+    - class_path: EarlyStopping
+      init_args:
+        monitor: val/loss
+        patience: 40
+
+  max_epochs: 100
+  check_val_every_n_epoch: 1
+  log_every_n_steps: 1
+  enable_checkpointing: true
+  default_root_dir: output/GhanaMiningOut
+
+data:
+  class_path: GenericNonGeoSegmentationDataModule
+  init_args:
+    batch_size: 4
+    num_workers: 8
+    dataset_bands:
+      - BLUE
+      - GREEN
+      - RED
+      - VNIR_1
+      - VNIR_2
+      - VNIR_3
+      - VNIR_4
+      - VNIR_5
+      - SWIR_1
+      - SWIR_2
+      - VH
+      - VV
+      - DEM
+    output_bands:
+      - BLUE
+      - GREEN
+      - RED
+      - VNIR_1
+      - VNIR_2
+      - VNIR_3
+      - VNIR_4
+      - VNIR_5
+      - SWIR_1
+      - SWIR_2
+      - VH
+      - VV
+      - DEM
+    rgb_indices:
+      - 2
+      - 1
+      - 0
+    train_transform:
+      - class_path: albumentations.RandomCrop
+        init_args:
+          height: 128
+          width: 128
+      - class_path: albumentations.HorizontalFlip
+        init_args:
+          p: 0.5
+      - class_path: ToTensorV2
+    no_data_replace: 0
+    no_label_replace: -1
+    train_data_root: /dss/dsstbyfs02/pn49cu/pn49cu-dss-0016/terratorch_fasteo/prithvi/GhanaMining/training
+    train_label_data_root: /dss/dsstbyfs02/pn49cu/pn49cu-dss-0016/terratorch_fasteo/prithvi/GhanaMining/training
+    val_data_root: /dss/dsstbyfs02/pn49cu/pn49cu-dss-0016/terratorch_fasteo/prithvi/GhanaMining/validation
+    val_label_data_root: /dss/dsstbyfs02/pn49cu/pn49cu-dss-0016/terratorch_fasteo/prithvi/GhanaMining/validation
+    test_data_root: /dss/dsstbyfs02/pn49cu/pn49cu-dss-0016/terratorch_fasteo/prithvi/GhanaMining/validation
+    test_label_data_root: /dss/dsstbyfs02/pn49cu/pn49cu-dss-0016/terratorch_fasteo/prithvi/GhanaMining/validation
+    img_grep: "*_IMG.tif"
+    label_grep: "*_MASK.tif"
+    means:
+      - 1473.81388377
+      - 1703.35249650
+      - 1696.67685941
+      - 2105.88077538
+      - 3133.47063806
+      - 3543.17834759
+      - 3677.26573009
+      - 3832.39764247
+      - 3156.11122121
+      - 2226.06822112
+      - -3.60578219
+      - -6.52798491
+      - 192.83874697
+    stds:
+      - 223.43533204
+      - 285.53613398
+      - 413.82320306
+      - 395.83356682
+      - 312.48236897
+      - 354.47004513
+      - 397.92163014
+      - 389.61483882
+      - 451.49534791
+      - 468.26765909
+      - 3.96725815
+      - 6.66565737
+      - 57.37162747
+    num_classes: 2
+
+model:
+  class_path: terratorch.tasks.SemanticSegmentationTask
+  init_args:
+    model_args:
+      decoder: FCNDecoder
+      pretrained: true
+      backbone: prithvi_vit_100
+      decoder_channels: 256
+      decoder_scale_modules: True
+      in_channels: 13
+      bands:
+        - BLUE
+        - GREEN
+        - RED
+        - VNIR_1
+        - VNIR_2
+        - VNIR_3
+        - VNIR_4
+        - VNIR_5
+        - SWIR_1
+        - SWIR_2
+        - VH
+        - VV
+        - DEM
+      num_frames: 1
+      num_classes: 2
+      head_dropout: 0.1
+      head_channel_list:
+        - 256
+    loss: dice
+    plot_on_val: 10
+    ignore_index: -1
+    class_weights:
+      - 0.1 # 93% non-mining
+      - 0.9 # 7% mining
+    freeze_backbone: false
+    freeze_decoder: false
+    model_factory: EncoderDecoderFactory
+    class_names:
+      - Non_mining
+      - Mining
+optimizer:
+  class_path: torch.optim.AdamW
+  init_args:
+    lr: 5.e-5
+    weight_decay: 0.05
+lr_scheduler:
+  class_path: ReduceLROnPlateau
+  init_args:
+    monitor: val/loss
+
+#Min and Max for each band:
+#Band 1: Min = 908.00000000, Max = 55537.00000000
+#Band 2: Min = 1097.00000000, Max = 13528.00000000
+#Band 3: Min = 1065.00000000, Max = 13496.00000000
+#Band 4: Min = 1243.00000000, Max = 14033.00000000
+#Band 5: Min = 1222.00000000, Max = 13512.00000000
+#Band 6: Min = 1253.00000000, Max = 13229.00000000
+#Band 7: Min = 1212.00000000, Max = 13336.00000000
+#Band 8: Min = 1252.00000000, Max = 13073.00000000
+#Band 9: Min = 852.00000000, Max = 16914.00000000
+#Band 10: Min = 1128.00000000, Max = 16634.00000000
+#Band 11: Min = -22.69805717, Max = 197.51095581
+#Band 12: Min = -26.52184296, Max = 16.37286949
+#Band 13: Min = 77.00000000, Max = 717.15307617
+
+#Normalized Means and Standard Deviations:
+#Band 1: Mean = 0.01035739, Std = 0.00409006
+#Band 2: Mean = 0.04877745, Std = 0.02296970
+#Band 3: Mean = 0.05081465, Std = 0.03328963
+#Band 4: Mean = 0.06746527, Std = 0.03094871
+#Band 5: Mean = 0.15553056, Std = 0.02542578
+#Band 6: Mean = 0.19123066, Std = 0.02959838
+#Band 7: Mean = 0.20333766, Std = 0.03282102
+#Band 8: Mean = 0.21828929, Std = 0.03295958
+#Band 9: Mean = 0.14345108, Std = 0.02810956
+#Band 10: Mean = 0.07081570, Std = 0.03019915
+#Band 11: Mean = 0.08670070, Std = 0.01801588
+#Band 12: Mean = 0.46611473, Std = 0.15539577
+#Band 13: Mean = 0.18095476, Std = 0.08962173
+
+#Means and Standard Deviations for each band:
+#Band 1: Mean = 1473.81388377, Std = 223.43533204
+#Band 2: Mean = 1703.35249650, Std = 285.53613398
+#Band 3: Mean = 1696.67685941, Std = 413.82320306
+#Band 4: Mean = 2105.88077538, Std = 395.83356682
+#Band 5: Mean = 3133.47063806, Std = 312.48236897
+#Band 6: Mean = 3543.17834759, Std = 354.47004513
+#Band 7: Mean = 3677.26573009, Std = 397.92163014
+#Band 8: Mean = 3832.39764247, Std = 389.61483882
+#Band 9: Mean = 3156.11122121, Std = 451.49534791
+#Band 10: Mean = 2226.06822112, Std = 468.26765909
+#Band 11: Mean = -3.60578219, Std = 3.96725815
+#Band 12: Mean = -6.52798491, Std = 6.66565737
+#Band 13: Mean = 192.83874697, Std = 57.37162747
