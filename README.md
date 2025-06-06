@@ -10,7 +10,8 @@ Paper: [Journal](https://github.com/ellaampy/ml_cocoa_mining/edit/main/README.md
 </div>
 
 
-
+### Introduction
+Agriculture remains a cornerstone of Ghana's economy. More than half of the land area is dedicated to agriculture, and its expansion continues to accelerate. Despite this growth, the sector faces compounding challenges, including climate-induced risks such as prolonged droughts, which aggravate low yields and threaten long-term productivity. A dimension of Ghana's agricultural landscape is agro-ecological regions, which not only sustain primary agricultural activities such as cocoa production but also coincidentally overlap with areas rich in mineral resources where several extractive sector activities, such as gold mining, occur on small and large scales. This convergence has driven a transition from agriculture landuse to mining, reshaping economic priorities and landuse dynamics. Artisanal and small-scale gold mining (ASGM) is on the rise, expanding into cocoa-dominated landscapes and posing serious threats to agricultural soils, water resources, and cropland due to its unregulated and unsustainable nature. Leveraging satellite imagery and geospatial analysis, we mapped cocoa and mining landuse, revealed areas where ASGM has taken over cocoa farmland, assessed the economic value of the transitioned areas, analyzed atmospheric elemental mercury in the cocoa landscape and developed a cocoa risk map. 
 
 ### Study area
 
@@ -18,11 +19,11 @@ Paper: [Journal](https://github.com/ellaampy/ml_cocoa_mining/edit/main/README.md
 
 ### Data 
 - Our work relies on satellite imagery from [SmallMinesDS](https://huggingface.co/datasets/ellaampy/SmallMinesDS) which contains ```4270``` patches; ```2175``` each for 2016 and 2022
-
-- Each patch has an input shape of ```13 x 128 x 128``` and a corresponding mask of ```1 x 128 x 128```
   
 - Only 6 bands (R-G-B-NIR-SWIR1-SWIR2) were used for the 3-class (background-1, mining-2, cocoa-3) segmentation problem
   
+- Each patch has an input shape of ```6 x 128 x 128``` and a corresponding mask of ```1 x 128 x 128```
+
 - The labels can be downloaded from [HuggingFace](https://huggingface.co/datasets/ellaampy/SmallMinesDS)
 
 <img src="figs/multilayer_sample_patches.png" alt="sample images" width="500"/>
