@@ -58,12 +58,6 @@ conda activate terratorch
 python scripts/train-prithvi-v2-300.py
 ```
 
-##### Fine-tuning with the 600M Model
-```bash
-conda activate terratorch
-python scripts/train-prithvi-v2-600.py
-```
-
 #### Training ResNet50 from Scratch
 To compare with Prithvi-2, we train ResNet50 from scratch using six spectral bands: **Blue, Green, Red, Narrow NIR, SWIR, and SWIR 2**.
 
@@ -87,7 +81,7 @@ If you use the dataset or supporting code in your research, please cite `SmallMi
   keywords={Data mining;Foundation models;Gold;Satellite images;Sentinel-1;Optical sensors;Laser radar;Biological system modeling;Spaceborne radar;Radar imaging;Earth Observation;Semantic Segmentation;Mining;Machine Learning;Foundation Models},
   doi={10.1109/LGRS.2025.3566356}}
 
-@ARTICaLE{10982207,
+@ARTICaLE{id,
   author={Ofori-Ampofo, Stella and Zappacosta, Antony and Kuzu, Rıdvan Salih and Schauer, Peter and Willberg, Martin and Zhu, Xiao Xiang},
   journal={}, 
   title={Cocoa under Threat: Assessing the Impact of Artisanal Gold Mining on Cocoa Landscapes using Remote Sensing and Foundation Model}, 
