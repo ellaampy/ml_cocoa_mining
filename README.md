@@ -20,11 +20,11 @@ Agriculture remains a cornerstone of Ghana's economy. More than half of the land
 ### Data 
 - Our work relies on satellite imagery from [SmallMinesDS](https://huggingface.co/datasets/ellaampy/SmallMinesDS) which contains ```4270``` patches; ```2175``` each for 2016 and 2022
   
-- Only 6 bands (R-G-B-NIR-SWIR1-SWIR2) were used for the 3-class (background-1, mining-2, cocoa-3) segmentation problem
+- SmallMinesDS contains 13 channels. Only 6 bands (R-G-B-NIR-SWIR1-SWIR2) were used for this 3-class (background-1, mining-2, cocoa-3) segmentation problem
   
-- Each patch has an input shape of ```6 x 128 x 128``` and a corresponding mask of ```1 x 128 x 128```
+- Hence each patch has an input shape of ```6 x 128 x 128``` and a corresponding mask of ```1 x 128 x 128```
 
-- The labels can be downloaded from [HuggingFace](https://huggingface.co/datasets/ellaampy/SmallMinesDS)
+- The 3-class labels can be downloaded from [HuggingFace](https://huggingface.co/datasets/ellaampy/SmallMinesDS) and matched to satellite data from SmallMinesDS
 
 <img src="figs/multilayer_sample_patches.png" alt="sample images" width="500"/>
 
@@ -41,31 +41,7 @@ A virtual environment is required:
 
 These environments are necessary as they rely on different PyTorch versions.
 
-#### Creating the TerraTorch Environment
-```bash
-conda create -n terratorch python=3.11
-conda activate terratorch
-pip install -r requirements.txt
-conda deactivate
-```
-
-
-#### Fine-tuning Prithvi-2
-Fine-tune Prithvi-2 using our dataset.
-
-##### Fine-tuning with the 300M Model
-```bash
-conda activate terratorch
-python scripts/train-prithvi-v2-300.py
-```
-
-#### Training ResNet50 from Scratch
-To compare with Prithvi-2, we train ResNet50 from scratch using six spectral bands: **Blue, Green, Red, Narrow NIR, SWIR, and SWIR 2**.
-
-```bash
-conda activate terratorch
-python scripts/train-resnet50-6bands.py
-```
+The requirement file and scripts for setting up the environment and running models can be found [here](https://github.com/DLR-MF-DAS/SmallMinesDS/tree/main)
 
 ### Citation
 If you use the dataset or supporting code in your research, please cite `SmallMinesDS` and "Cocoa under Threat" as :
