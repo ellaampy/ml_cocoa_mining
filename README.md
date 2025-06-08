@@ -20,7 +20,7 @@ Agriculture remains a cornerstone of Ghana's economy. More than half of the land
 ### Data 
 - Our work relies on satellite imagery from [SmallMinesDS](https://huggingface.co/datasets/ellaampy/SmallMinesDS) which contains ```4270``` patches; ```2175``` each for 2016 and 2022
   
-- SmallMinesDS contains 13 channels. Only 6 bands (R-G-B-NIR-SWIR1-SWIR2) were used for this 3-class (background-1, mining-2, cocoa-3) segmentation problem
+- SmallMinesDS contains 13 channels. Only 6 bands (B-G-R-NIR-SWIR1-SWIR2) were used for this 3-class (background-1, mining-2, cocoa-3) segmentation problem
   
 - Hence each patch has an input shape of ```6 x 128 x 128``` and a corresponding mask of ```1 x 128 x 128```
 
@@ -39,9 +39,30 @@ Agriculture remains a cornerstone of Ghana's economy. More than half of the land
 A virtual environment is required:
 **Terratorch Environment** (for TerraTorch dependencies)
 
-These environments are necessary as they rely on different PyTorch versions.
+#### Creating the TerraTorch Environment
+```bash
+conda create -n terratorch python=3.11
+conda activate terratorch
+pip install -r requirements.txt
+conda deactivate
+```
 
-The requirement file and scripts for setting up the environment and running models can be found [here](https://github.com/DLR-MF-DAS/SmallMinesDS/tree/main)
+#### Fine-tuning Prithvi-2
+Fine-tune Prithvi-2 using our dataset.
+
+##### Fine-tuning with the 300M Model
+```bash
+conda activate terratorch
+python scripts/train-prithvi-v2-300.py
+```
+
+#### Training ResNet50 from Scratch
+To compare with Prithvi-2, we train ResNet50 from scratch.
+
+```bash
+conda activate terratorch
+python scripts/train-resnet50-6bands.py
+```
 
 ### Citation
 If you use the dataset or supporting code in your research, please cite `SmallMinesDS` and "Cocoa under Threat" as :
