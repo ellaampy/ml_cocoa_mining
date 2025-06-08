@@ -58,7 +58,7 @@ datamodule = GenericNonGeoSegmentationDataModule(
     label_grep="*_MASK.tif",
     means=means,
     stds=stds,
-    num_classes=2,
+    num_classes=3,
 
     # if transforms are defined with Albumentations, you can pass them here
     train_transform=train_transform,
@@ -96,7 +96,7 @@ task = SemanticSegmentationTask(
     optimizer_hparams={"weight_decay": 0.05},
     freeze_backbone=True,
     class_names=['Non_mining', 'Mining']
-    #class_weights=[0.1, 0.9]
+    #class_weights=[0.11, 0.78, 0.11]
 )
 
 datamodule.setup("fit")
