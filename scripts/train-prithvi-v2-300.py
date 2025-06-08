@@ -77,7 +77,7 @@ model_args = {
         "backbone":"prithvi_eo_v2_300", # see smp_encoders.keys()
         "bands": ghana_mining_bands,
         "in_channels": 6,
-        "num_classes": 2,
+        "num_classes": 3,
         "pretrained": True,
         "decoder": "UperNetDecoder",
         "rescale": True,
